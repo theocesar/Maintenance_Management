@@ -489,7 +489,7 @@
                                                LINDET01-REL-PECA
                                                LINDET01-REL-QTD
 
-                       IF LINDET01-REL-STATUS = 'ATIVO' AND
+                       IF LINDET01-REL-STATUS = 'FINALIZADO' AND
                            LINDET01-REL-PLACA = WS-PLACA
 
                            IF LINDET01-REL-TIPO-SERVICO = 'PREVENTIVO'

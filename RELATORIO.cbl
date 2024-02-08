@@ -40,7 +40,7 @@
 
        01 WS-CABEC-REL2.
            05 WS-CABEC-REL2-PGM         PIC X(15) VALUE
-                                               'PROJETO FINAL'.
+                                               'MANUTENCAO'.
            05 WS-CABEC-REL2-FL1         PIC X(13) VALUE SPACES.
            05 WS-CABEC-REL2-DES         PIC X(09) VALUE 'VOLVO S.A'.
            05 WS-CABEC-REL2-FL2         PIC X(13) VALUE SPACES.
