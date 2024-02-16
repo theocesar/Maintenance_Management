@@ -1,0 +1,145 @@
+    *-----------------------------------------------------------------
+      *                    DEFINIÇÃO DE CABEÇALHO
+      *-----------------------------------------------------------------
+
+       01 WS-CABEC-REL1                    PIC X(60) VALUE ALL '='.
+
+       01 WS-CABEC-REL2.
+           05 WS-CABEC-REL2-NOME           PIC X(05) VALUE 'NOME'.
+           05 WS-CABEC-REL2-SPACE1         PIC X(10) VALUE SPACES.
+           05 WS-CABEC-REL2-CPF            PIC X(03) VALUE 'CPF'.
+           05 WS-CABEC-REL2-SPACE2         PIC X(10) VALUE SPACES.
+           05 WS-CABEC-REL2-ENDERECO       PIC X(08) VALUE 'ENDERECO'.
+           05 WS-CABEC-REL2-SPACE3         PIC X(10) VALUE SPACES.
+           05 WS-CABEC-REL2-TELEFONE       PIC X(08) VALUE 'TELEFONE'.
+           05 WS-CABEC-REL2-SPACE4         PIC X(10) VALUE SPACES.
+           05 WS-CABEC-REL2-STATUS         PIC X(06) VALUE 'STATUS'.
+
+      *-----------------------------------------------------------------
+      *                    DEFINIÇÃO DE CABEÇALHO
+      *-----------------------------------------------------------------
+
+
+
+    2400-EXCLUIR-CLIENTE SECTION.
+
+           DISPLAY "Informe o CPF do cliente a ser excluido: "
+           ACCEPT WS-CPF-BUSCA
+
+           PERFORM 1050-VERIFICAR-DADOS
+           IF WS-EXISTE-DADOS = 'S'
+               OPEN INPUT RELATO
+               PERFORM 1125-VERIFICAR-ABERTURA
+
+               PERFORM UNTIL WS-CLOSE-FILE = 'N'
+                   READ RELATO INTO WS-DADOS
+                       AT END
+                           MOVE 'N' TO WS-CLOSE-FILE
+                       NOT AT END
+                           UNSTRING WS-DADOS DELIMITED BY '|' INTO
+                                               LINDET01-REL-NOME
+                                               LINDET01-REL-CPF
+                                               LINDET01-REL-ENDERECO
+                                               LINDET01-REL-TELEFONE
+                           IF LINDET01-REL-CPF = WS-CPF-BUSCA
+                               CONTINUE
+                           ELSE
+                               STRING WS-DADOS DELIMITED BY SIZE
+                                   INTO ARQ-RELATO-NOVO
+                               WRITE ARQ-RELATO-NOVO
+                           END-IF
+               END-PERFORM
+           ELSE
+               DISPLAY 'NAO HA CLIENTES CADASTRADOS'
+           END-IF
+
+           DISPLAY "Deseja excluir outro cliente? (S/N)"
+           ACCEPT WS-AUX
+           IF WS-AUX = 'N'
+               DISPLAY 'CLIENTE(s) EXCLUIDO(s) COM SUCESSO'
+           END-IF
+           .
+
+       2400-EXCLUIR-CLIENTE-FIM.
+           EXIT.
+
+
+
+
+
+           2500-SOBESCREVER-ARQ                SECTION.
+
+           CLOSE RELATO
+           PERFORM 1150-VERIFICAR-FECHAMENTO
+
+           PERFORM 1075-EXISTE-DADOS-NOVO
+           IF WS-EXISTE-DADOS = 'S'
+               OPEN INPUT RELATO-NOVO
+               PERFORM 1200-ABERTURA-SEC
+
+               OPEN I-O RELATO
+               PERFORM 1125-VERIFICAR-ABERTURA
+
+               PERFORM UNTIL WS-CLOSE-FILE = 'N'
+                   READ RELATO-NOVO INTO WS-DADOS
+                       AT END
+                           MOVE 'N' TO WS-CLOSE-FILE
+                       NOT AT END
+                           MOVE WS-DADOS TO ARQ-RELATO-LINHA
+                           REWRITE ARQ-RELATO-LINHA
+                   END-READ
+               END-PERFORM
+           END-IF
+
+
+           .
+       2500-SOBESCREVER-ARQ-FIM.
+            EXIT.
+
+
+        * SEÇÃO PARA VERIFICAR SE O ARQUIVO RELATO-NOVO ESTA VAZIO OU NÃO.
+      * 1075-EXISTE-DADOS-NOVO              SECTION.
+
+      *     CLOSE RELATO-NOVO
+      *     IF AS-STATUS-S1 NOT EQUALS ZEROS
+      *         DISPLAY 'DEU ERRO NO FECHAMENTO: ' AS-STATUS-S1
+      *     END-IF
+
+      *     OPEN INPUT RELATO-NOVO
+      *     PERFORM 1200-ABERTURA-SEC
+
+      *     READ RELATO-NOVO
+      *         AT END
+      *             MOVE 'N' TO WS-EXISTE-DADOS
+      *         NOT AT END
+      *             MOVE 'S' TO WS-EXISTE-DADOS
+      *     END-READ
+
+      *     CLOSE RELATO-NOVO
+      *     IF AS-STATUS-S1 NOT EQUALS ZEROS
+      *         DISPLAY 'DEU ERRO NO FECHAMENTO: ' AS-STATUS-S1
+      *     END-IF
+      *     .
+      * 1075-EXISTE-DADOS-NOVO-FIM.
+      *     EXIT.
+
+
+
+      * SEÇÃO PARA VERIFICAR O STATUS DE ABERTURA DO ARQUIVO RELATO-NOVO
+      * 1200-ABERTURA-SEC                   SECTION.
+
+      *     IF AS-STATUS-S1 NOT EQUALS ZEROS
+      *         DISPLAY 'DEU ERRO NA ABERTURA ' AS-STATUS-S1
+      *     END-IF
+
+      *     .
+      * 1200-ABERTURA-SEC-FIM.
+      *     EXIT.
+
+            *                     IF LINDET01-REL-CPF = WS-CPF-BUSCA
+      *                         CONTINUE
+      *                     ELSE
+      *                         STRING WS-DADOS DELIMITED BY SIZE
+      *                             INTO ARQ-RELATO-NOVO
+      *                         WRITE ARQ-RELATO-NOVO
+      *                     END-IF
