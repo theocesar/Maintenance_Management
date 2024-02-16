@@ -6,6 +6,10 @@
       * Purpose: Relatorio final com os custos
       * Modifications:
       *    06/02/2024 - Relatorio's structure finished.
+      *    16/02/2024 - Implemented a change to the general organization
+      *    of the sequential files. Now all of them will be generated
+      *    and stored in a other folder in order to improve the
+      *    project's organization.
       ******************************************************************
        ENVIRONMENT DIVISION.
        CONFIGURATION SECTION.
@@ -15,7 +19,7 @@
        FILE-CONTROL.
 
        SELECT RELATO ASSIGN TO
-       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/RelatorioFinal.txt'
+       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Costs.txt'
        FILE STATUS IS AS-STATUS-S.
 
        DATA DIVISION.

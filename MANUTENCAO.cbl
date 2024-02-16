@@ -21,6 +21,10 @@
       *    validations.
       *    07/02/2024 - Costs calculation done.
       *    07/02/2024 - Costs report also done.
+      *    16/02/2024 - Implemented a change to the general organization
+      *    of the sequential files. Now all of them will be generated
+      *    and stored in a other folder in order to improve the
+      *    project's organization.
       ******************************************************************
        ENVIRONMENT DIVISION.
        CONFIGURATION SECTION.
@@ -30,17 +34,17 @@
        FILE-CONTROL.
 
        SELECT MAINTENANCE ASSIGN TO
-       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Manutencao.txt'
+       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Files/Manutencao.txt'
        ORGANIZATION IS SEQUENTIAL
        FILE STATUS IS AS-STATUS-S.
 
        SELECT PECAS ASSIGN TO
-       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Relatorio-pecas.txt'
+       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Files/Pecas.txt'
        ORGANIZATION IS SEQUENTIAL
        FILE STATUS IS AS-STATUS-E1.
 
        SELECT VEICULOS ASSIGN TO
-       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Relatorio-veiculos.txt'
+       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Files/Veiculos.txt'
        ORGANIZATION IS SEQUENTIAL
        FILE STATUS IS AS-STATUS-E2.
 

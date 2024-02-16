@@ -11,6 +11,10 @@
       * Date:05/02/2024 - Trabalhando com erros em relação ao ID
       * Date:06/02/2024 - Consertado erro em relação ao ID
       * Date:07/02/2024 - Erros de open do relato
+      *    16/02/2024 - Implemented a change to the general organization
+      *    of the sequential files. Now all of them will be generated
+      *    and stored in a other folder in order to improve the
+      *    project's organization.
       *
       * Tectonics: CBL
       ******************************************************************
@@ -19,7 +23,7 @@
        FILE-CONTROL.
 
        SELECT RELATO-PECAS ASSIGN TO
-       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Relatorio-pecas.txt'
+       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Files/Pecas.txt'
        FILE STATUS IS AS-STATUS-S.
 
 
