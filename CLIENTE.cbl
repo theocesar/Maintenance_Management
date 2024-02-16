@@ -27,6 +27,25 @@
       *    05/02/2024 - Adding comments to sections in INITIALIZATION.
       *    05/02/2024 - Don't make the menu inside a loop. Major bug as
       *    a result of it.
+      *    16/02/2024 - Removed the following section: 2500.
+      *    16/02/2024 - Removed the file RELATO-NOVO.
+      *    16/02/2024 - Removed all functions and sections related to
+      *    that file.
+      *    16/02/2024 - Implemented a new DELETE section.
+      *    16/02/2024 - Implemented a change to the READ section.
+      *    16/02/2024 - Added a new attribute to the clients: STATUS.
+      *    16/02/2024 - Removed the header's definition.
+      *    16/02/2024 - Stored the old functions in other file named
+      *    "OLD FUNCTIONS".
+      *    16/02/2024 - Implemented changes to every CRUD opeation. Now
+      *    the file will be open before the initial IF.
+      *    16/02/2024 - Modified the DELETE section using the UPDATE
+      *    section structure.
+      *    16/02/2024 - Changed the numbering of sections.
+      *    16/02/2024 - Implemented a change to the general organization
+      *    of the sequential files. Now all of them will be generated
+      *    and stored in a other folder in order to improve the
+      *    project's organization.
       ******************************************************************
        ENVIRONMENT DIVISION.
        CONFIGURATION SECTION.
@@ -36,14 +55,9 @@
        FILE-CONTROL.
 
        SELECT RELATO ASSIGN TO
-       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Clientes.txt'
+       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Files/Clientes.txt'
        ORGANIZATION IS SEQUENTIAL
        FILE STATUS IS AS-STATUS-S.
-
-       SELECT RELATO-NOVO ASSIGN TO
-       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Clientes1.txt'
-       ORGANIZATION IS SEQUENTIAL
-       FILE STATUS IS AS-STATUS-S1.
 
        DATA DIVISION.
        FILE SECTION.
@@ -54,11 +68,6 @@
 
        01 ARQ-RELATO-LINHA                 PIC X(62).
 
-       FD RELATO-NOVO
-          RECORDING MODE IS F
-          BLOCK CONTAINS 0 RECORDS.
-
-       01 ARQ-RELATO-NOVO                  PIC X(62).
 
        WORKING-STORAGE SECTION.
 
@@ -66,36 +75,18 @@
        01 AS-STATUS-S1                     PIC 9(02)   VALUE ZEROS.
 
       *-----------------------------------------------------------------
-      *                    DEFINIÇÃO DE CABEÇALHO
-      *-----------------------------------------------------------------
-
-       01 WS-CABEC-REL1                    PIC X(60) VALUE ALL '='.
-
-       01 WS-CABEC-REL2.
-           05 WS-CABEC-REL2-NOME           PIC X(05) VALUE 'NOME'.
-           05 WS-CABEC-REL2-SPACE1         PIC X(10) VALUE SPACES.
-           05 WS-CABEC-REL2-CPF            PIC X(03) VALUE 'CPF'.
-           05 WS-CABEC-REL2-SPACE2         PIC X(10) VALUE SPACES.
-           05 WS-CABEC-REL2-ENDERECO       PIC X(08) VALUE 'ENDERECO'.
-           05 WS-CABEC-REL2-SPACE3         PIC X(10) VALUE SPACES.
-           05 WS-CABEC-REL2-TELEFONE       PIC X(08) VALUE 'TELEFONE'.
-
-      *-----------------------------------------------------------------
-      *                    DEFINIÇÃO DE CABEÇALHO
-      *-----------------------------------------------------------------
-
-
-      *-----------------------------------------------------------------
       *                    DEFINIÇÃO DE DETALHE
       *-----------------------------------------------------------------
        01 LINDET01-REL.
            05 LINDET01-REL-NOME            PIC X(10)   VALUE SPACES.
-           05 LINDET01-REL-SPACE1          PIC X(03)   VALUE ' | '.
+           05 LINDET01-REL-SPACE1          PIC X(01)   VALUE '|'.
            05 LINDET01-REL-CPF             PIC 9(11)   VALUE ZEROS.
-           05 LINDET01-REL-SPACE2          PIC X(03)   VALUE ' | '.
+           05 LINDET01-REL-SPACE2          PIC X(01)   VALUE '|'.
            05 LINDET01-REL-ENDERECO        PIC X(15)   VALUE SPACES.
-           05 LINDET01-REL-SPACE3          PIC X(02)   VALUE '| '.
+           05 LINDET01-REL-SPACE3          PIC X(01)   VALUE '|'.
            05 LINDET01-REL-TELEFONE        PIC X(13)   VALUE SPACES.
+           05 LINDET01-REL-SPACE4          PIC X(01)   VALUE '|'.
+           05 LINDET01-REL-STATUS          PIC 9(01)   VALUE ZEROS.
 
 
        01 WS-LINDET-SPACES                 PIC X(60)   VALUE ALL SPACES.
@@ -132,7 +123,7 @@
       *                        MAIN PROCEDURE
       *-----------------------------------------------------------------
 
-       PROCEDURE DIVISION USING WS-SUB-OPTION.
+       PROCEDURE DIVISION.
 
            PERFORM 1000-INICIALIZAR
            PERFORM 3000-FINALIZAR
@@ -149,24 +140,19 @@
 
        1000-INICIALIZAR                    SECTION.
 
-           PERFORM 1050-VERIFICAR-DADOS
+           PERFORM 1100-VERIFICAR-DADOS
 
            IF WS-EXISTE-DADOS = 'S'
                OPEN EXTEND RELATO
-               PERFORM 1125-VERIFICAR-ABERTURA
+               PERFORM 1300-VERIFICAR-ABERTURA
 
-               OPEN OUTPUT RELATO-NOVO
-               PERFORM 1200-ABERTURA-SEC
            ELSE
                OPEN OUTPUT RELATO
-               PERFORM 1125-VERIFICAR-ABERTURA
-
-               OPEN OUTPUT RELATO-NOVO
-               PERFORM 1200-ABERTURA-SEC
+               PERFORM 1300-VERIFICAR-ABERTURA
 
            END-IF
 
-           PERFORM 1100-DISPLAY-MENU
+           PERFORM 1200-DISPLAY-MENU
 
             .
        1000-INICIALIZAR-FIM.
@@ -175,7 +161,7 @@
 
       *    SEÇÃO PARA VERIFICAR SE O ARQUIVO RELATO EXISTE OU NÃO
       *    SE ELE EXISTIR, RETORNA SE ELE ESTA VAZIO OU NÃO
-       1050-VERIFICAR-DADOS        SECTION.
+       1100-VERIFICAR-DADOS        SECTION.
 
            OPEN INPUT RELATO
            IF AS-STATUS-S <> 35
@@ -185,7 +171,7 @@
                END-IF
 
                OPEN INPUT RELATO
-               PERFORM 1125-VERIFICAR-ABERTURA
+               PERFORM 1300-VERIFICAR-ABERTURA
 
                READ RELATO
                    AT END
@@ -201,15 +187,15 @@
 
            ELSE
                OPEN OUTPUT RELATO
-               PERFORM 1125-VERIFICAR-ABERTURA
+               PERFORM 1300-VERIFICAR-ABERTURA
 
                CLOSE RELATO
-               PERFORM 1150-VERIFICAR-FECHAMENTO
+               PERFORM 1400-VERIFICAR-FECHAMENTO
 
                OPEN INPUT RELATO
-               PERFORM 1125-VERIFICAR-ABERTURA
+               PERFORM 1300-VERIFICAR-ABERTURA
 
-                   READ RELATO
+               READ RELATO
                    AT END
                        MOVE 'N' TO WS-EXISTE-DADOS
                    NOT AT END
@@ -222,37 +208,11 @@
                END-IF
            END-IF
            .
-       1050-VERIFICAR-DADOS-FIM.
+       1100-VERIFICAR-DADOS-FIM.
            EXIT.
 
 
-      * SEÇÃO PARA VERIFICAR SE O ARQUIVO RELATO-NOVO ESTA VAZIO OU NÃO.
-       1075-EXISTE-DADOS-NOVO              SECTION.
-
-           CLOSE RELATO-NOVO
-           IF AS-STATUS-S1 NOT EQUALS ZEROS
-               DISPLAY 'DEU ERRO NO FECHAMENTO: ' AS-STATUS-S1
-           END-IF
-
-           OPEN INPUT RELATO-NOVO
-           PERFORM 1200-ABERTURA-SEC
-
-           READ RELATO-NOVO
-               AT END
-                   MOVE 'N' TO WS-EXISTE-DADOS
-               NOT AT END
-                   MOVE 'S' TO WS-EXISTE-DADOS
-           END-READ
-
-           CLOSE RELATO-NOVO
-           IF AS-STATUS-S1 NOT EQUALS ZEROS
-               DISPLAY 'DEU ERRO NO FECHAMENTO: ' AS-STATUS-S1
-           END-IF
-           .
-       1075-EXISTE-DADOS-NOVO-FIM.
-           EXIT.
-
-       1100-DISPLAY-MENU                   SECTION.
+       1200-DISPLAY-MENU                   SECTION.
 
            DISPLAY "|---------------------------------------|"
            DISPLAY "|            MENU DE CLIENTES           |"
@@ -275,7 +235,6 @@
                PERFORM 2300-ATUALIZAR-CLIENTE UNTIL WS-AUX = 'N'
            WHEN WS-OPCAO = 4
                PERFORM 2400-EXCLUIR-CLIENTE UNTIL WS-AUX = 'N'
-               PERFORM 2500-SOBESCREVER-ARQ
            WHEN WS-OPCAO = 5
                PERFORM 3000-FINALIZAR
            WHEN OTHER
@@ -283,43 +242,31 @@
                PERFORM 3000-FINALIZAR
            END-EVALUATE
            .
-       1100-DISPLAY-MENU-FIM.
+       1200-DISPLAY-MENU-FIM.
            EXIT.
 
 
       * SEÇÃO PARA VERIFICAR O STATUS DE ABERTURA DO ARQUIVO RELATO
-       1125-VERIFICAR-ABERTURA             SECTION.
+       1300-VERIFICAR-ABERTURA             SECTION.
 
            IF AS-STATUS-S NOT EQUALS ZEROS
                DISPLAY 'DEU ERRO NA ABERTURA ' AS-STATUS-S
            END-IF
 
            .
-       1125-VERIFICAR-ABERTURA-FIM.
+       1300-VERIFICAR-ABERTURA-FIM.
            EXIT.
 
 
       * SEÇÃO PARA VERIFICAR O STATUS DE FECHAMENTO DO ARQUIVO RELATO
-       1150-VERIFICAR-FECHAMENTO           SECTION.
+       1400-VERIFICAR-FECHAMENTO           SECTION.
 
            IF AS-STATUS-S NOT EQUALS ZEROS
                DISPLAY 'DEU ERRO NO FECHAMENTO ' AS-STATUS-S
            END-IF
 
            .
-       1150-VERIFICAR-FECHAMENTO-FIM.
-           EXIT.
-
-
-      * SEÇÃO PARA VERIFICAR O STATUS DE ABERTURA DO ARQUIVO RELATO-NOVO
-       1200-ABERTURA-SEC                   SECTION.
-
-           IF AS-STATUS-S1 NOT EQUALS ZEROS
-               DISPLAY 'DEU ERRO NA ABERTURA ' AS-STATUS-S1
-           END-IF
-
-           .
-       1200-ABERTURA-SEC-FIM.
+       1400-VERIFICAR-FECHAMENTO-FIM.
            EXIT.
 
 
@@ -341,6 +288,7 @@
            ACCEPT LINDET01-REL-ENDERECO
            DISPLAY "TELEFONE: "
            ACCEPT LINDET01-REL-TELEFONE
+           MOVE 1 TO LINDET01-REL-STATUS
 
            MOVE LINDET01-REL TO ARQ-RELATO-LINHA
            WRITE ARQ-RELATO-LINHA
@@ -360,19 +308,28 @@
 
        2200-CONSULTAR-CLIENTE              SECTION.
 
-           PERFORM 1050-VERIFICAR-DADOS
+           PERFORM 1100-VERIFICAR-DADOS
+
+           OPEN INPUT RELATO
+           PERFORM 1300-VERIFICAR-ABERTURA
 
            IF WS-EXISTE-DADOS = 'S'
-
-               OPEN INPUT RELATO
-               PERFORM 1125-VERIFICAR-ABERTURA
 
                PERFORM UNTIL WS-CLOSE-FILE = 'N'
                    READ RELATO INTO WS-DADOS
                        AT END
                            MOVE 'N' TO WS-CLOSE-FILE
                        NOT AT END
-                           DISPLAY WS-DADOS
+                           UNSTRING WS-DADOS DELIMITED BY '|' INTO
+                                                   LINDET01-REL-NOME
+                                                   LINDET01-REL-CPF
+                                                   LINDET01-REL-ENDERECO
+                                                   LINDET01-REL-TELEFONE
+                                                   LINDET01-REL-STATUS
+
+                           IF LINDET01-REL-STATUS = 1
+                               DISPLAY WS-DADOS
+                           END-IF
                    END-READ
                END-PERFORM
            ELSE
@@ -382,14 +339,16 @@
            MOVE 'S' TO AS-FIM
            .
        2200-CONSULTAR-CLIENTE-FIM.
-       EXIT.
+           EXIT.
 
        2300-ATUALIZAR-CLIENTE              SECTION.
 
-           PERFORM 1050-VERIFICAR-DADOS
+           PERFORM 1100-VERIFICAR-DADOS
+
+           OPEN I-O RELATO
+           PERFORM 1300-VERIFICAR-ABERTURA
+
            IF WS-EXISTE-DADOS = 'S'
-               OPEN I-O RELATO
-               PERFORM 1125-VERIFICAR-ABERTURA
                PERFORM UNTIL WS-CONTINUE-UPDATE = 'N'
 
                    DISPLAY "Informe o CPF do cliente a ser atualizado: "
@@ -406,6 +365,7 @@
                                                    LINDET01-REL-CPF
                                                    LINDET01-REL-ENDERECO
                                                    LINDET01-REL-TELEFONE
+                                                   LINDET01-REL-STATUS
 
 
                                IF LINDET01-REL-CPF = WS-CPF-BUSCA
@@ -424,14 +384,16 @@
 
                                    STRING LINDET01-REL-NOME DELIMITED
                                    BY SIZE
-                                   ' | ' DELIMITED BY SIZE
+                                   '|' DELIMITED BY SIZE
                                    LINDET01-REL-CPF DELIMITED BY SIZE
-                                   ' | ' DELIMITED BY SIZE
+                                   '|' DELIMITED BY SIZE
                                    LINDET01-REL-ENDERECO DELIMITED BY
                                    SIZE
-                                   '| ' DELIMITED BY SIZE
+                                   '|' DELIMITED BY SIZE
                                    LINDET01-REL-TELEFONE DELIMITED BY
                                    SIZE
+                                   '|' DELIMITED BY SIZE
+                                   LINDET01-REL-STATUS DELIMITED BY SIZE
                                    INTO LINDET01-REL
 
                                    MOVE LINDET01-REL TO ARQ-RELATO-LINHA
@@ -441,6 +403,7 @@
                        END-READ
                    END-PERFORM
 
+                   DISPLAY 'CLIENTE(s) ATUALIZADO(s) COM SUCESSO'
                    DISPLAY "Deseja atualizar outro cliente? (S/N)"
                    ACCEPT WS-CONTINUE-UPDATE
                END-PERFORM
@@ -449,7 +412,7 @@
            END-IF
 
            MOVE 'N' TO WS-AUX
-           DISPLAY 'CLIENTE(s) ATUALIZADO(s) COM SUCESSO'
+
 
            .
        2300-ATUALIZAR-CLIENTE-FIM.
@@ -458,75 +421,64 @@
 
        2400-EXCLUIR-CLIENTE SECTION.
 
-           DISPLAY "Informe o CPF do cliente a ser excluido: "
-           ACCEPT WS-CPF-BUSCA
+           PERFORM 1100-VERIFICAR-DADOS
 
-           PERFORM 1050-VERIFICAR-DADOS
+           OPEN I-O RELATO
+           PERFORM 1300-VERIFICAR-ABERTURA
+
            IF WS-EXISTE-DADOS = 'S'
-               OPEN INPUT RELATO
-               PERFORM 1125-VERIFICAR-ABERTURA
+               PERFORM UNTIL WS-CONTINUE-UPDATE = 'N'
 
-               PERFORM UNTIL WS-CLOSE-FILE = 'N'
-                   READ RELATO INTO WS-DADOS
-                       AT END
-                           MOVE 'N' TO WS-CLOSE-FILE
-                       NOT AT END
-                           UNSTRING WS-DADOS DELIMITED BY '|' INTO
-                                               LINDET01-REL-NOME
-                                               LINDET01-REL-CPF
-                                               LINDET01-REL-ENDERECO
-                                               LINDET01-REL-TELEFONE
-                           IF LINDET01-REL-CPF = WS-CPF-BUSCA
-                               CONTINUE
-                           ELSE
-                               STRING WS-DADOS DELIMITED BY SIZE
-                                   INTO ARQ-RELATO-NOVO
-                               WRITE ARQ-RELATO-NOVO
-                           END-IF
+                   DISPLAY "Informe o CPF do cliente a ser excluido: "
+                   ACCEPT WS-CPF-BUSCA
+
+                   PERFORM UNTIL WS-CLOSE-FILE = 'N'
+                       READ RELATO INTO WS-DADOS
+                           AT END
+                               MOVE 'N' TO WS-CLOSE-FILE
+                           NOT AT END
+                               UNSTRING WS-DADOS DELIMITED BY '|' INTO
+                                                   LINDET01-REL-NOME
+                                                   LINDET01-REL-CPF
+                                                   LINDET01-REL-ENDERECO
+                                                   LINDET01-REL-TELEFONE
+                                                   LINDET01-REL-STATUS
+
+                               IF LINDET01-REL-CPF = WS-CPF-BUSCA
+                                   MOVE 2 TO LINDET01-REL-STATUS
+                                   STRING LINDET01-REL-NOME DELIMITED
+                                   BY SIZE
+                                   '|' DELIMITED BY SIZE
+                                   LINDET01-REL-CPF DELIMITED BY SIZE
+                                   '|' DELIMITED BY SIZE
+                                   LINDET01-REL-ENDERECO DELIMITED BY
+                                   SIZE
+                                   '|' DELIMITED BY SIZE
+                                   LINDET01-REL-TELEFONE DELIMITED BY
+                                   SIZE
+                                   '|' DELIMITED BY SIZE
+                                   LINDET01-REL-STATUS DELIMITED BY SIZE
+                                   INTO LINDET01-REL
+
+                                   MOVE LINDET01-REL TO ARQ-RELATO-LINHA
+                                   REWRITE ARQ-RELATO-LINHA
+                                   EXIT PERFORM
+                                END-IF
+                   END-PERFORM
+
+                   DISPLAY 'CLIENTE(s) EXCLUIDO(s) COM SUCESSO'
+                   DISPLAY "Deseja excluir outro cliente? (S/N)"
+                   ACCEPT WS-CONTINUE-UPDATE
                END-PERFORM
            ELSE
                DISPLAY 'NAO HA CLIENTES CADASTRADOS'
            END-IF
 
-           DISPLAY "Deseja excluir outro cliente? (S/N)"
-           ACCEPT WS-AUX
-           IF WS-AUX = 'N'
-               DISPLAY 'CLIENTE(s) EXCLUIDO(s) COM SUCESSO'
-           END-IF
+           MOVE 'N' TO WS-AUX
            .
 
        2400-EXCLUIR-CLIENTE-FIM.
            EXIT.
-
-       2500-SOBESCREVER-ARQ                SECTION.
-
-           CLOSE RELATO
-           PERFORM 1150-VERIFICAR-FECHAMENTO
-
-           PERFORM 1075-EXISTE-DADOS-NOVO
-           IF WS-EXISTE-DADOS = 'S'
-               OPEN INPUT RELATO-NOVO
-               PERFORM 1200-ABERTURA-SEC
-
-               OPEN I-O RELATO
-               PERFORM 1125-VERIFICAR-ABERTURA
-
-               PERFORM UNTIL WS-CLOSE-FILE = 'N'
-                   READ RELATO-NOVO INTO WS-DADOS
-                       AT END
-                           MOVE 'N' TO WS-CLOSE-FILE
-                       NOT AT END
-                           MOVE WS-DADOS TO ARQ-RELATO-LINHA
-                           REWRITE ARQ-RELATO-LINHA
-                   END-READ
-               END-PERFORM
-           END-IF
-
-
-           .
-       2500-SOBESCREVER-ARQ-FIM.
-            EXIT.
-
 
       *-----------------------------------------------------------------
       *                            PROCESSAMENTO
@@ -540,16 +492,9 @@
        3000-FINALIZAR                      SECTION.
 
            CLOSE RELATO
-           IF AS-STATUS-S NOT EQUALS ZEROS
-                DISPLAY 'DEU ERRO NO FECHAMENTO ' AS-STATUS-S
-           END-IF
+           PERFORM 1400-VERIFICAR-FECHAMENTO
 
-           CLOSE RELATO-NOVO
-           IF AS-STATUS-S1 NOT EQUALS ZEROS
-               DISPLAY 'DEU ERRO NO FECHAMENTO: ' AS-STATUS-S1
-           END-IF
-
-            EXIT PROGRAM
+            STOP RUN
            .
        3000-FINALIZAR-FIM.
            EXIT.
