@@ -23,7 +23,7 @@
        FILE-CONTROL.
 
        SELECT RELATO ASSIGN TO
-       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Files/Veiculos.txt'
+       'ADDRESS'
        FILE STATUS IS AS-STATUS-S.
 
 

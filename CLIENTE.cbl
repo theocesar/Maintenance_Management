@@ -55,7 +55,7 @@
        FILE-CONTROL.
 
        SELECT RELATO ASSIGN TO
-       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Files/Clientes.txt'
+       'ADDRESS'
        ORGANIZATION IS SEQUENTIAL
        FILE STATUS IS AS-STATUS-S.
 

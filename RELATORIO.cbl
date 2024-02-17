@@ -19,7 +19,7 @@
        FILE-CONTROL.
 
        SELECT RELATO ASSIGN TO
-       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Costs.txt'
+       'ADDRESS'
        FILE STATUS IS AS-STATUS-S.
 
        DATA DIVISION.

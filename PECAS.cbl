@@ -23,7 +23,7 @@
        FILE-CONTROL.
 
        SELECT RELATO-PECAS ASSIGN TO
-       'C:/Users/Theo/Desktop/Escola/Volvo/COBOL/Files/Pecas.txt'
+       'ADDRESS'
        FILE STATUS IS AS-STATUS-S.
 
 
